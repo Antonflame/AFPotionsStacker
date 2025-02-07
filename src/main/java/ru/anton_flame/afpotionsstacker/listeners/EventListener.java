@@ -1,6 +1,7 @@
 package ru.anton_flame.afpotionsstacker.listeners;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -8,6 +9,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import ru.anton_flame.afpotionsstacker.AFPotionsStacker;
+import ru.anton_flame.afpotionsstacker.utils.ConfigManager;
 
 public class EventListener implements Listener {
 
@@ -30,21 +32,30 @@ public class EventListener implements Listener {
     }
 
     private int getMaxAmount(String primaryGroup, Material type) {
-        String configPath = "settings.limits.";
-        if (plugin.getConfig().getBoolean(configPath + "luckperms.enabled")) {
-            if (type == Material.POTION) {
-                configPath += "luckperms." + primaryGroup + ".default_potion";
-            } else {
-                configPath += "luckperms." + primaryGroup + "." + type.name().toLowerCase();
-            }
+        boolean isLuckPermsEnabled = ConfigManager.luckPermsEnabled;
+        ConfigurationSection groupsLimitsSection = ConfigManager.groupsLimitsSection;
+
+        String configKey;
+        int defaultValue;
+
+        if (type == Material.POTION) {
+            configKey = "default_potion";
+            defaultValue = ConfigManager.defaultPotionLimit;
+        } else if (type == Material.SPLASH_POTION) {
+            configKey = "splash_potion";
+            defaultValue = ConfigManager.splashPotionLimit;
+        } else if (type == Material.LINGERING_POTION) {
+            configKey = "lingering_potion";
+            defaultValue = ConfigManager.lingeringPotionLimit;
         } else {
-            if (type == Material.POTION) {
-                configPath += "default_potion";
-            } else {
-                configPath += type.name().toLowerCase();
-            }
+            return 0;
         }
-        return plugin.getConfig().getInt(configPath);
+
+        if (isLuckPermsEnabled && groupsLimitsSection.contains(primaryGroup + "." + configKey)) {
+            return groupsLimitsSection.getInt(primaryGroup + "." + configKey);
+        }
+
+        return defaultValue;
     }
 
     private void potionsStacking(EntityPickupItemEvent event, Inventory inventory, ItemStack itemStack, int maxAmount) {

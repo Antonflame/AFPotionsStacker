@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import ru.anton_flame.afpotionsstacker.AFPotionsStacker;
+import ru.anton_flame.afpotionsstacker.utils.ConfigManager;
 import ru.anton_flame.afpotionsstacker.utils.Hex;
 
 public class AFPotionsStackerCommand implements CommandExecutor {
@@ -17,7 +18,7 @@ public class AFPotionsStackerCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (strings.length < 1 || !strings[0].equalsIgnoreCase("reload")) {
-            for (String message : plugin.getConfig().getStringList("messages.help")) {
+            for (String message : ConfigManager.help) {
                 commandSender.sendMessage(Hex.color(message));
             }
             return false;
@@ -25,12 +26,13 @@ public class AFPotionsStackerCommand implements CommandExecutor {
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("reload")) {
             if (!commandSender.hasPermission("afpotionsstacker.reload")) {
-                commandSender.sendMessage(Hex.color(plugin.getConfig().getString("messages.no-permission")));
+                commandSender.sendMessage(Hex.color(ConfigManager.noPermission));
                 return false;
             }
 
             plugin.reloadConfig();
-            commandSender.sendMessage(Hex.color(plugin.getConfig().getString("messages.reloaded")));
+            ConfigManager.setupConfigValues(plugin);
+            commandSender.sendMessage(Hex.color(ConfigManager.reloaded));
         }
         return true;
     }

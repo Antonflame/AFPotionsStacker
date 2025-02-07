@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.anton_flame.afpotionsstacker.commands.AFPotionsStackerCommand;
 import ru.anton_flame.afpotionsstacker.listeners.EventListener;
+import ru.anton_flame.afpotionsstacker.utils.ConfigManager;
 
 public final class AFPotionsStacker extends JavaPlugin {
 
@@ -15,6 +16,7 @@ public final class AFPotionsStacker extends JavaPlugin {
     public void onEnable() {
         getLogger().info("Плагин был включен!");
         saveDefaultConfig();
+        ConfigManager.setupConfigValues(this);
         Bukkit.getPluginManager().registerEvents(new EventListener(this), this);
         getCommand("afpotionsstacker").setExecutor(new AFPotionsStackerCommand(this));
 
