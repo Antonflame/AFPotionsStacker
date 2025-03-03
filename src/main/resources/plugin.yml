@@ -3,7 +3,7 @@ version: '${project.version}'
 main: ru.anton_flame.afpotionsstacker.AFPotionsStacker
 api-version: '1.16'
 authors: [anton_flame]
-softdepend: [LuckPerms]
+softdepend: [LuckPerms, Vault, LuckPerms]
 commands:
   afpotionsstacker:
     aliases:

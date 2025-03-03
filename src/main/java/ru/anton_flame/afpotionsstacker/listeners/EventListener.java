@@ -23,10 +23,37 @@ public class EventListener implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             ItemStack itemStack = event.getItem().getItemStack();
-            if (itemStack.getType().toString().contains("POTION")) {
+            Material type = itemStack.getType();
+
+            if (type.toString().contains("POTION")) {
                 String primaryGroup = plugin.luckPerms.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup();
-                int maxAmount = getMaxAmount(primaryGroup, itemStack.getType());
-                potionsStacking(event, player.getInventory(), itemStack, maxAmount);
+                int maxAmount = getMaxAmount(primaryGroup, type);
+
+                String economy = getPotionEconomy(type);
+                String economyDisplayName = getPotionEconomyDisplayName(type);
+                int potionPrice = getPotionPrice(type);
+
+                if (potionPrice > 0) {
+                    if (economy.equalsIgnoreCase("Vault")) {
+                        if (plugin.vaultAPI.has(player, potionPrice) && plugin.vaultAPI != null) {
+                            plugin.vaultAPI.withdrawPlayer(player, potionPrice);
+                            potionsStacking(event, player.getInventory(), itemStack, maxAmount);
+                            player.sendMessage(ConfigManager.potionsStacking.replace("%price%", String.valueOf(potionPrice)).replace("%economy_display_name%", economyDisplayName));
+                        } else {
+                            player.sendMessage(ConfigManager.notEnoughCurrency.replace("%price%", String.valueOf(potionPrice)).replace("%economy_display_name%", economyDisplayName));
+                        }
+                    } else if (economy.equalsIgnoreCase("PlayerPoints") && plugin.playerPointsAPI != null) {
+                        if (plugin.playerPointsAPI.look(player.getUniqueId()) >= potionPrice) {
+                            plugin.playerPointsAPI.take(player.getUniqueId(), potionPrice);
+                            potionsStacking(event, player.getInventory(), itemStack, maxAmount);
+                            player.sendMessage(ConfigManager.potionsStacking.replace("%price%", String.valueOf(potionPrice)).replace("%economy_display_name%", economyDisplayName));
+                        } else {
+                            player.sendMessage(ConfigManager.notEnoughCurrency.replace("%price%", String.valueOf(potionPrice)).replace("%economy_display_name%", economyDisplayName));
+                        }
+                    } else {
+                        player.sendMessage(ConfigManager.economyNotFound);
+                    }
+                }
             }
         }
     }
@@ -56,6 +83,42 @@ public class EventListener implements Listener {
         }
 
         return defaultValue;
+    }
+
+    private String getPotionEconomy(Material type) {
+        if (type == Material.POTION) {
+            return ConfigManager.defaultPotionPayment.getString("economy");
+        } else if (type == Material.SPLASH_POTION) {
+            return ConfigManager.splashPotionPayment.getString("economy");
+        } else if (type == Material.LINGERING_POTION) {
+            return ConfigManager.lingeringPotionPayment.getString("economy");
+        } else {
+            return "";
+        }
+    }
+
+    private String getPotionEconomyDisplayName(Material type) {
+        if (type == Material.POTION) {
+            return ConfigManager.defaultPotionPayment.getString("economy-display-name");
+        } else if (type == Material.SPLASH_POTION) {
+            return ConfigManager.splashPotionPayment.getString("economy-display-name");
+        } else if (type == Material.LINGERING_POTION) {
+            return ConfigManager.lingeringPotionPayment.getString("economy-display-name");
+        } else {
+            return "";
+        }
+    }
+
+    private int getPotionPrice(Material type) {
+        if (type == Material.POTION) {
+            return ConfigManager.defaultPotionPayment.getInt("price");
+        } else if (type == Material.SPLASH_POTION) {
+            return ConfigManager.splashPotionPayment.getInt("price");
+        } else if (type == Material.LINGERING_POTION) {
+            return ConfigManager.lingeringPotionPayment.getInt("price");
+        } else {
+            return 0;
+        }
     }
 
     private void potionsStacking(EntityPickupItemEvent event, Inventory inventory, ItemStack itemStack, int maxAmount) {

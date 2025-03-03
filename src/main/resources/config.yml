@@ -42,12 +42,45 @@ settings:
         # Максимальное количество стакнутых туманных зелий
         lingering_potion: 16
 
+  # Настройка оплаты за стаканье зелий
+  payment:
+    # Настройка обычных зелий
+    default_potion:
+      # Тип экономики (Vault / PlayerPoints)
+      economy: "Vault"
+      # Название экономики
+      economy-display-name: "монет"
+      # Стоимость
+      price: 100
+    # Настройка взрывных зелий
+    splash_potion:
+      # Тип экономики (Vault / PlayerPoints)
+      economy: "Vault"
+      # Название экономики
+      economy-display-name: "монет"
+      # Стоимость
+      price: 200
+    # Настройка туманных зелий
+    lingering_potion:
+      # Тип экономики (Vault / PlayerPoints)
+      economy: "PlayerPoints"
+      # Название экономики
+      economy-display-name: "поинтов"
+      # Стоимость
+      price: 30
+
 # Сообщения плагина
 messages:
   # Сообщение при недостатке прав
   no-permission: "&cУ Вас недостаточно прав!"
   # Сообщение при перезагрузке конфигурации
   reloaded: "&fКонфигурация была перезагружена!"
+  # Сообщение при успешном стканьи зелий
+  potions-stacking: "&fВы успешно стакнули зелья и заплатили за это &6%price% %economy_display_name%"
+  # Сообщение при нехватке валюты у игрока
+  not-enough-currency: "&cУ Вас не хватает валюты для стаканья зелий! Нужно: %price% %economy_display_name%"
+  # Сообщение при отсутствии экономики
+  economy-not-found: "&cЭкономика не найдена!"
   # Хелп-сообщение
   help:
     - ""

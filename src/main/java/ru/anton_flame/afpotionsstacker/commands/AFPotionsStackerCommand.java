@@ -6,7 +6,6 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import ru.anton_flame.afpotionsstacker.AFPotionsStacker;
 import ru.anton_flame.afpotionsstacker.utils.ConfigManager;
-import ru.anton_flame.afpotionsstacker.utils.Hex;
 
 public class AFPotionsStackerCommand implements CommandExecutor {
 
@@ -19,20 +18,20 @@ public class AFPotionsStackerCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (strings.length < 1 || !strings[0].equalsIgnoreCase("reload")) {
             for (String message : ConfigManager.help) {
-                commandSender.sendMessage(Hex.color(message));
+                commandSender.sendMessage(message);
             }
             return false;
         }
 
         if (strings.length == 1 && strings[0].equalsIgnoreCase("reload")) {
             if (!commandSender.hasPermission("afpotionsstacker.reload")) {
-                commandSender.sendMessage(Hex.color(ConfigManager.noPermission));
+                commandSender.sendMessage(ConfigManager.noPermission);
                 return false;
             }
 
             plugin.reloadConfig();
             ConfigManager.setupConfigValues(plugin);
-            commandSender.sendMessage(Hex.color(ConfigManager.reloaded));
+            commandSender.sendMessage(ConfigManager.reloaded);
         }
         return true;
     }
