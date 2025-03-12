@@ -36,22 +36,30 @@ public class EventListener implements Listener {
                 if (potionPrice > 0) {
                     if (economy.equalsIgnoreCase("Vault")) {
                         if (plugin.vaultAPI.has(player, potionPrice) && plugin.vaultAPI != null) {
-                            plugin.vaultAPI.withdrawPlayer(player, potionPrice);
-                            potionsStacking(event, player.getInventory(), itemStack, maxAmount);
-                            player.sendMessage(ConfigManager.potionsStacking.replace("%price%", String.valueOf(potionPrice)).replace("%economy_display_name%", economyDisplayName));
+                            if (potionsStacking(event, player.getInventory(), itemStack, maxAmount)) {
+                                plugin.vaultAPI.withdrawPlayer(player, potionPrice);
+                                player.sendMessage(ConfigManager.potionsStacking.replace("%price%", String.valueOf(potionPrice)).replace("%economy_display_name%", economyDisplayName));
+                            }
                         } else {
-                            player.sendMessage(ConfigManager.notEnoughCurrency.replace("%price%", String.valueOf(potionPrice)).replace("%economy_display_name%", economyDisplayName));
+                            if (potionsStacking(event, player.getInventory(), itemStack, maxAmount)) {
+                                player.sendMessage(ConfigManager.notEnoughCurrency.replace("%price%", String.valueOf(potionPrice)).replace("%economy_display_name%", economyDisplayName));
+                            }
                         }
                     } else if (economy.equalsIgnoreCase("PlayerPoints") && plugin.playerPointsAPI != null) {
                         if (plugin.playerPointsAPI.look(player.getUniqueId()) >= potionPrice) {
-                            plugin.playerPointsAPI.take(player.getUniqueId(), potionPrice);
-                            potionsStacking(event, player.getInventory(), itemStack, maxAmount);
-                            player.sendMessage(ConfigManager.potionsStacking.replace("%price%", String.valueOf(potionPrice)).replace("%economy_display_name%", economyDisplayName));
+                            if (potionsStacking(event, player.getInventory(), itemStack, maxAmount)) {
+                                plugin.playerPointsAPI.take(player.getUniqueId(), potionPrice);
+                                player.sendMessage(ConfigManager.potionsStacking.replace("%price%", String.valueOf(potionPrice)).replace("%economy_display_name%", economyDisplayName));
+                            }
                         } else {
-                            player.sendMessage(ConfigManager.notEnoughCurrency.replace("%price%", String.valueOf(potionPrice)).replace("%economy_display_name%", economyDisplayName));
+                            if (potionsStacking(event, player.getInventory(), itemStack, maxAmount)) {
+                                player.sendMessage(ConfigManager.notEnoughCurrency.replace("%price%", String.valueOf(potionPrice)).replace("%economy_display_name%", economyDisplayName));
+                            }
                         }
                     } else {
-                        player.sendMessage(ConfigManager.economyNotFound);
+                        if (potionsStacking(event, player.getInventory(), itemStack, maxAmount)) {
+                            player.sendMessage(ConfigManager.economyNotFound);
+                        }
                     }
                 }
             }
@@ -121,7 +129,7 @@ public class EventListener implements Listener {
         }
     }
 
-    private void potionsStacking(EntityPickupItemEvent event, Inventory inventory, ItemStack itemStack, int maxAmount) {
+    private boolean potionsStacking(EntityPickupItemEvent event, Inventory inventory, ItemStack itemStack, int maxAmount) {
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack stack = inventory.getItem(i);
 
@@ -138,7 +146,10 @@ public class EventListener implements Listener {
                     stack.setAmount(maxAmount);
                     itemStack.setAmount(amount - freeSpace);
                 }
+                return true;
             }
         }
+
+        return false;
     }
 }
