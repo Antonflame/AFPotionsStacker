@@ -9,7 +9,7 @@ import java.util.List;
 public class ConfigManager {
 
     public static int defaultPotionLimit, splashPotionLimit, lingeringPotionLimit;
-    public static String noPermission, reloaded, potionsStacking, notEnoughCurrency, economyNotFound;
+    public static String noPermission, reloaded, potionsStackedForPrice, potionsStackedForFree, notEnoughCurrency, economyNotFound;
     public static List<String> help;
     public static ConfigurationSection groupsLimitsSection, defaultPotionPayment, splashPotionPayment, lingeringPotionPayment;
     public static boolean luckPermsEnabled;
@@ -30,7 +30,8 @@ public class ConfigManager {
         noPermission = Hex.color(messages.getString("no-permission"));
         reloaded = Hex.color(messages.getString("reloaded"));
         help = Hex.color(messages.getStringList("help"));
-        potionsStacking = Hex.color(messages.getString("potions-stacking"));
+        potionsStackedForPrice = Hex.color(messages.getString("potions-stacked-for-price"));
+        potionsStackedForFree = Hex.color(messages.getString("potions-stacked-for-free"));
         notEnoughCurrency = Hex.color(messages.getString("not-enough-currency"));
         economyNotFound = Hex.color(messages.getString("economy-not-found"));
         groupsLimitsSection = limits.getConfigurationSection("luckperms");
